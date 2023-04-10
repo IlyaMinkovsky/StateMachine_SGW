@@ -94,6 +94,14 @@ for pair in table_1:
 
 # print('Stack')
 # pprint.pprint(stack)
+# table_2 = {
+#     (2, 3): {'V'},
+#     (2, 4): {'V'},
+#     (2, 5): {'V'},
+#     (3, 4): {'V'},
+#     (3, 5): {'V'},
+#     (4, 5): {'V'},
+# }
 
 print('Таблица после проверки условий совместимости')
 for pair in table_2:
@@ -102,6 +110,7 @@ for pair in table_2:
 
 print('2. Нахождение списка максимальных классов совместимости.')
 F = set()
+auxiliary_F = set()
 for i in range(n - 1, 0, -1):
     f = []
     for j in range(n, i, -1):
@@ -110,13 +119,21 @@ for i in range(n - 1, 0, -1):
         if 'X' not in table_2[(i, j)]:
             f.append(j)
     last_f = set(f)
+    for el in last_f:
+        auxiliary_F.add(tuple(sorted([i, el])))
     #print(f'last_f: {last_f}')
     for l in range(1, len(f) + 1):
         for p in permutations(f, l):
             #print(f'perm -> {p}')
-            if p in F:
-                F.remove(p)
+            if p in auxiliary_F:
+                if p in F:
+                    F.remove(p)
+                for aux_l in range(1, len(p)):
+                    for aux_p in permutations(p, aux_l):
+                        if tuple([i] + list(aux_p)) in F:
+                            F.remove(tuple([i] + list(aux_p)))
                 F.add(tuple([i] + list(p)))
+                auxiliary_F.add(tuple([i] + list(p)))
                 for el in p:
                     if el in last_f:
                         last_f.remove(el)
